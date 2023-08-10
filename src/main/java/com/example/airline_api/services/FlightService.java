@@ -8,8 +8,10 @@ import com.example.airline_api.repositories.PassengerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FlightService {
@@ -63,4 +65,17 @@ public Flight saveFlight(FlightDTO flightDTO){
     flightRepository.delete(flight);
     }
 
+
+
+
+
+    public List<Flight> getFlightsByDestination(String destination) {
+        List<Flight> flightsByDestination = new ArrayList<>();
+        for (Flight flight : flightRepository.findAll()) {
+            if (flight.getDestination().equals(destination)) {
+                flightsByDestination.add(flight);
+            }
+        }
+        return flightsByDestination;
+    }
 }
