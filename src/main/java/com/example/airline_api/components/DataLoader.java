@@ -34,6 +34,7 @@ public class DataLoader implements ApplicationRunner {
                  "08:00");
 
 
+
         Flight flight2 = new Flight
             ("Doha", 100,
                     "2023-08-10",
@@ -43,6 +44,11 @@ public class DataLoader implements ApplicationRunner {
             ("Dubai", 100,
                     "2023-09-10",
                  "11:00");
+
+        Flight flight4 = new Flight
+                ("Riyadh", 100,
+                        "2021-01-01",
+                        "01:00");
 
 
         Passenger passenger1 =new Passenger("John Doe");
@@ -73,7 +79,7 @@ public class DataLoader implements ApplicationRunner {
         flight1.addPassenger(passenger2);
         flight1.addPassenger(passenger3);
         flight1.addPassenger(passenger4);
-        flight1.addPassenger(passenger4);
+
 
         flight2.addPassenger(passenger1);
         flight2.addPassenger(passenger5);
@@ -90,11 +96,8 @@ public class DataLoader implements ApplicationRunner {
                 Arrays.asList(
                 flight1,
                 flight2,
-                flight3 ));
-
-
-
-
+                flight3,
+                flight4));
 
 
 

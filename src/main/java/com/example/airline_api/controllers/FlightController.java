@@ -20,45 +20,46 @@ public class FlightController {
 
     @Autowired
     FlightService flightService;
-    @Autowired
-    FlightRepository flightRepository;
 
 
 
+
+//    CREATE - NEW FLIGHT
+    @PostMapping // Add a new flight
+    public ResponseEntity<Flight> postFlight(@RequestBody FlightDTO flightDTO){
+        Flight savedFlight= flightService.addFlight(flightDTO);
+        return new ResponseEntity<>(savedFlight, HttpStatus.CREATED);
+    }
+
+//    READ - INDEXES
     @GetMapping // Display all available flights
     public ResponseEntity<List<Flight>> getAllFlights(){
         List<Flight> flights = flightService.findAllFlights();
         return new ResponseEntity<>(flights, HttpStatus.OK);
     }
-
+//    READ - SHOW  BY ID
     @GetMapping(value = "/{id}") // Display details of a specific flight
     public ResponseEntity<Optional<Flight>> getFlightById(@PathVariable Integer id){
         return new ResponseEntity(flightService.findFlight(id), HttpStatus.OK);
     }
-
-    @GetMapping(value = "/{destination}")
+//    READ - SHOW BY DESTINATION (ignoring letter cases)
+    @GetMapping(value = "destinations/{destination}")
     public ResponseEntity<List<Flight>> getFlightsByDestination(@PathVariable String destination) {
-        return new ResponseEntity<>(flightService.getFlightsByDestination(destination), HttpStatus.OK);
+        return new ResponseEntity<>(flightService.findAllByDestination(destination), HttpStatus.OK);
     }
 
-
-
-    @PostMapping // Add a new passenger
-    public ResponseEntity<Flight> postFlight(@RequestBody FlightDTO flightDTO){
-        Flight savedFlight= flightService.saveFlight(flightDTO);
-        return new ResponseEntity<>(savedFlight, HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/{id}") // ADDED
-    public ResponseEntity<Flight> updateFlight(@RequestBody FlightDTO flightDTO, @PathVariable Integer id){
-        Flight flight = flightService.updateFlight(flightDTO,id);
+//    UPDATE - EXISTING FLIGHT
+    @PutMapping(value = "/{flightId}") // ADDED
+    public ResponseEntity<Flight> updateFlight(@RequestBody FlightDTO flightDTO, @PathVariable Integer flightId){
+        Flight flight = flightService.updateFlight(flightDTO,flightId);
         return new ResponseEntity<>(flight, HttpStatus.OK);
     }
 
+//    DELETE - FLIGHT
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteFlight(@RequestBody FlightDTO flightDTO, @PathVariable Integer id){
-        Flight flight = flightService.saveFlight(flightDTO);
-        flightService.deleteFlight(flight);
+    public ResponseEntity<String> deleteFlight(@PathVariable Integer id){
+
+        flightService.deleteFlight(id);
         return new ResponseEntity<>("Flight deleted", HttpStatus.GONE);
     }
 

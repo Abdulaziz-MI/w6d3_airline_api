@@ -22,37 +22,39 @@ public class FlightService {
     @Autowired
     PassengerRepository passengerRepository;
 
-public Flight saveFlight(FlightDTO flightDTO){
-    
-    Flight flight =new Flight(
+
+//    New Empty flight
+    public Flight addFlight(FlightDTO flightDTO){
+        Flight flight =new Flight(
             flightDTO.getDestination(),
             flightDTO.getCapacity(),
             flightDTO.getDepartureDate(),
             flightDTO.getDepartureTime());
-    for (Integer passengersId : flightDTO.getPassengerIds() ){
-        Passenger passenger = passengerRepository.findById(passengersId).get();
-        flight.addPassenger(passenger);
+        flightRepository.save(flight);
+        return  flight;
     }
-    
-    flightRepository.save(flight);
-    return flight;
+    public void saveFlight(Flight flight){
+        flightRepository.save(flight);
 }
 
-    public Flight findFlight(Integer id){
-    return flightRepository.findById(id).get();
-    }
-
     public List<Flight> findAllFlights(){
-    return flightRepository.findAll();
+        return flightRepository.findAll();
     }
 
-    public Flight updateFlight(FlightDTO flightDTO, Integer id){ // ADDED
-        Flight flightToUpdate = flightRepository.findById(id).get();
-        flightToUpdate.setCapacity(flightDTO.getCapacity());
+    public Flight findFlight(Integer id){
+        return flightRepository.findById(id).get();
+    }
 
-        // remove all existing passengers
+//    update existing flight
+    public Flight updateFlight(FlightDTO flightDTO, Integer id){
+
+        Flight flightToUpdate = flightRepository.findById(id).get();
+        flightToUpdate.setDestination(flightDTO.getDestination());
+        flightToUpdate.setCapacity(flightDTO.getCapacity());
+        flightToUpdate.setDepartureDate(flightDTO.getDepartureDate());
+        flightToUpdate.setDepartureTime(flightDTO.getDepartureTime());
         flightToUpdate.setPassengers(new ArrayList<Passenger>());
-        // find and add passengers
+
         for (Integer passengerId : flightDTO.getPassengerIds()){
             Passenger passenger = passengerRepository.findById(passengerId).get();
             flightToUpdate.addPassenger(passenger);
@@ -61,21 +63,32 @@ public Flight saveFlight(FlightDTO flightDTO){
         return flightToUpdate;
     }
 
-    public void deleteFlight(Flight flight){
-    flightRepository.delete(flight);
-    }
 
+    public Flight bookPassenger(Integer flightId, Integer passengerId) {
 
-
-
-
-    public List<Flight> getFlightsByDestination(String destination) {
-        List<Flight> flightsByDestination = new ArrayList<>();
-        for (Flight flight : flightRepository.findAll()) {
-            if (flight.getDestination().equals(destination)) {
-                flightsByDestination.add(flight);
-            }
+        Flight flight = flightRepository.findById(flightId).get();
+        Passenger passenger = passengerRepository.findById(passengerId).get();
+        
+        if (flight.getPassengers().size()<flight.getCapacity()) {
+            flight.addPassenger(passenger);
+            flightRepository.save(flight);
         }
-        return flightsByDestination;
+        return flight;
     }
+
+//    derived query
+    public List<Flight> findAllByDestination(String destination){
+        return flightRepository.findAllByDestinationIgnoreCase(destination);
+    }
+    public void deleteFlight(Integer id){
+        Optional<Flight> flightOptional = flightRepository.findById(id);
+
+        if (flightOptional.isPresent()) {
+            Flight flight = flightOptional.get();
+          flight.getPassengers().clear();
+            flightRepository.deleteById(id);
+        }
+    }
+
+
 }
